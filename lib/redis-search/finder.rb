@@ -16,9 +16,10 @@ class Redis
       # * Redis::Search.complete("Tag","red") => ["Redis", "Redmine"]
       # * Redis::Search.complete("Tag","redi") => ["Redis"]
       def complete(type, w, options = {})
-        limit      = options[:limit] || 10
-        order      = options[:order] || 'desc'
-        conditions = options[:conditions] || []
+        limit       = options[:limit] || 10
+        order       = options[:order] || 'desc'
+        allow_empty = options[:allow_empty] || false
+        conditions  = options[:conditions] || []
         return [] if (w.blank? && conditions.blank?) || type.blank?
 
         prefix_matchs = []
@@ -75,6 +76,8 @@ class Redis
         else
           temp_store_key = words.first
         end
+
+        return [] if allow_empty && temp_store_key.blank?
 
         # 如果有条件，这里再次组合一下
         unless condition_keys.blank?
