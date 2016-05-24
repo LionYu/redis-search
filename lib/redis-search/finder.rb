@@ -17,6 +17,7 @@ class Redis
       # * Redis::Search.complete("Tag","redi") => ["Redis"]
       def complete(type, w, options = {})
         limit      = options[:limit] || 10
+        order      = options[:order] || 'desc'
         conditions = options[:conditions] || []
         return [] if (w.blank? && conditions.blank?) || type.blank?
 
@@ -88,7 +89,7 @@ class Redis
         ids = config.redis.sort(temp_store_key,
                                 limit: [0, limit],
                                 by: mk_score_key(type, '*'),
-                                order: 'desc')
+                                order: order)
         return [] if ids.blank?
         hmget(type, ids)
       end
